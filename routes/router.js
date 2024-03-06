@@ -7,8 +7,8 @@ router.get('/', async (req, res) => {
 	console.log("page hit");
 	
 	try {
-		const result = await dbModel.getAllUsers();
-		res.render('index', {allUsers: result});
+		const result = await dbModel.getAllRestaurants();
+		res.render('index', {allRestaurants: result});
 
 		//Output the results of the query to the Heroku Logs
 		console.log(result);
@@ -19,12 +19,12 @@ router.get('/', async (req, res) => {
 	}
 });
 
-router.post('/addUser', (req, res) => {     
+router.post('/addRestaurant', (req, res) => {     
 	console.log("form submit");     
 	console.log(req.body); 
 }); 
 
-router.post('/addUser', async (req, res) => {     
+router.post('/addRestaurant', async (req, res) => {     
 	console.log("form submit");     
 	console.log(req.body);    
 	try {   
@@ -42,8 +42,8 @@ router.post('/addUser', async (req, res) => {
 	} 
 });
 
-router.get('/deleteUser', async (req, res) => {     
-	console.log("delete user");    
+router.get('/deleteRestaurant', async (req, res) => {     
+	console.log("delete restaurant");    
 	console.log(req.query);   
 	let userId = req.query.id;    
 	if (userId) {   
@@ -57,5 +57,20 @@ router.get('/deleteUser', async (req, res) => {
 		}  
 	} 
 }); 
+
+router.get('/showReviews', async (req, res) => {
+    console.log("show reviews for restaurant");
+    console.log(req.query);
+    const restaurantId = req.query.id;
+    try {
+        // Fetch reviews for the specified restaurantId
+        const reviews = await dbModel.getReviewsByRestaurantId(restaurantId);
+        res.render('reviews', { reviews: reviews });
+        console.log(reviews);
+    } catch (err) {
+        res.render('error', { message: 'Error reading reviews from MySQL' });
+        console.log("Error reading reviews from MySQL:", err);
+    }
+});
 
 module.exports = router;

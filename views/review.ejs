@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews for <%= restaurant.name %></title>
+    <!-- Include any CSS or JS files needed for styling or functionality -->
+</head>
+<body>
+    <h1>Reviews for <%= restaurant.name %></h1>
+    
+    <!-- Display existing reviews -->
+    <% if (reviews.length > 0) { %>
+    <div>
+        <ul>
+            <% reviews.forEach(review => { %>
+            <li>
+                <strong>Reviewer: <%= review.reviewerName %></strong><br>
+                <strong>Rating: <%= review.rating %></strong><br>
+                <%= review.details %>
+            </li>
+            <% }); %>
+        </ul>
+    </div>
+    <% } else { %>
+    <p>No reviews yet.</p>
+    <% } %>
+    
+    <!-- Form for submitting a review -->
+    <form action="/submitReview" method="post">
+        <div>
+            <label for="reviewerName">Your Name:</label>
+            <input type="text" id="reviewerName" name="reviewerName" required>
+        </div>
+        <div>
+            <label for="rating">Rating:</label>
+            <input type="number" id="rating" name="rating" min="1" max="5" required>
+        </div>
+        <div>
+            <label for="details">Details:</label>
+            <textarea id="details" name="details" rows="4" cols="50" required></textarea>
+        </div>
+        <input type="hidden" name="restaurantId" value="<%= restaurant.id %>">
+        <button type="submit">Submit Review</button>
+    </form>
+</body>
+</html>

@@ -1,10 +1,10 @@
 const database = include('/databaseConnection');
 
 
-async function getAllUsers() {
+async function getAllRestaurants() {
 	let sqlQuery = `
-		SELECT web_user_id, first_name, last_name, email
-		FROM web_user;
+		SELECT name, description
+		FROM restaurant;
 	`;
 	
 	try {
@@ -13,36 +13,30 @@ async function getAllUsers() {
 		return results[0];
 	}
 	catch (err) {
-		console.log("Error selecting from todo table");
+		console.log("Error selecting from restaurant table");
 		console.log(err);
 		return null;
 	}
 }
-const passwordPepper = "SeCretPeppa4MySal+";  
-async function addUser(postData) {     
-	let sqlInsertSalt = `  INSERT INTO web_user (first_name, last_name, email, password_salt)   
-	VALUES (:first_name, :last_name, :email, sha2(UUID(),512));  `;     
+  
+async function addUser(postData, callback) {     
+	let sqlInsertSalt = `  INSERT INTO restaurant (name, description)   
+	VALUES (:name, :description);  `;     
 	let params = {                 
-		first_name: postData.first_name,             
-		last_name: postData.last_name,             
-		email: postData.email         
+		name: postData.name,             
+		description: postData.description,                     
 	};     
 	console.log(sqlInsertSalt);  
-	try {   
-		const results = await database.query(sqlInsertSalt, params);    
-		let insertedID = results.insertId;   
-		let updatePasswordHash = `    UPDATE web_user     
-		SET password_hash = sha2(concat(:password,:pepper,password_salt),512)     
-		WHERE web_user_id = :userId;   `;   
-		let params2 = {    password: postData.password,    pepper: passwordPepper,    userId: insertedID   }   
-		console.log(updatePasswordHash);   
-		const results2 = await database.query(updatePasswordHash, params2);      
-		return true;  
-	}  
-	catch (err) {   
-		console.log(err);    
-		return false;  
-	} 
+	database.query(sqlInsert, params, (err, results, fields) => {
+		if (err) {
+			console.log(err);
+			callback(err, null);
+		}
+		else {
+			console.log(results);
+			callback(null, results);
+		}
+	});
 } 
 
 async function deleteUser(webUserId) {     
@@ -61,4 +55,4 @@ async function deleteUser(webUserId) {
 	}         
 } 
 
-module.exports = { getAllUsers, addUser, deleteUser }
+module.exports = { getAllRestaurants, addUser, deleteUser }
